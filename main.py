@@ -1,10 +1,10 @@
 """
-FastAPI application — routes, CORS, and static file serving.
+FastAPI application — routes, CORS, static file serving, and API router.
 """
 import os
 import uuid
 import logging
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import FastAPI, UploadFile, File, Form, Depends, Query, HTTPException
@@ -12,26 +12,31 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import func, case
+from sqlalchemy import func
 
 from config import settings
 from database import init_db, get_db, SessionLocal
 from models import Call
 from schemas import UploadResponse, JobStatus, DashboardMetrics, HealthResponse
-from celery_worker import process_call
+
+# Import the new call-analytics router
+from api.call_analytics import router as analytics_router
 
 # ── Logging ─────────────────────────────────────────────
-logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(name)s | %(levelname)s | %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 # ── App ─────────────────────────────────────────────────
 app = FastAPI(
     title="CallCenter Compliance AI",
     description="Multilingual call center compliance analytics platform",
-    version="1.0.0",
+    version="2.0.0",
 )
 
-# CORS — allow all origins in dev
+# CORS — allow all origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -39,6 +44,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ── Include API Routers ─────────────────────────────────
+app.include_router(analytics_router, tags=["Call Analytics"])
 
 # ── Startup ─────────────────────────────────────────────
 @app.on_event("startup")
@@ -54,7 +62,9 @@ os.makedirs(static_dir, exist_ok=True)
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
-# ── Routes ──────────────────────────────────────────────
+# ═══════════════════════════════════════════════════════
+# LEGACY ROUTES (preserved for dashboard + upload flow)
+# ═══════════════════════════════════════════════════════
 
 @app.get("/", include_in_schema=False)
 async def root():
@@ -71,7 +81,6 @@ async def health_check():
     db_status = "connected"
     redis_status = "unknown"
 
-    # Check DB
     try:
         db = SessionLocal()
         db.execute(func.now() if not settings.DATABASE_URL.startswith("sqlite") else func.date("now"))
@@ -79,7 +88,6 @@ async def health_check():
     except Exception:
         db_status = "disconnected"
 
-    # Check Redis
     try:
         import redis
         r = redis.from_url(settings.REDIS_URL)
@@ -101,17 +109,14 @@ async def upload_audio(
     Upload an audio file for processing.
     Returns a job_id immediately — processing is async via Celery.
     """
-    # Validate file type
     allowed_extensions = {".mp3", ".wav", ".m4a", ".ogg", ".flac", ".webm"}
     ext = os.path.splitext(file.filename)[1].lower()
     if ext not in allowed_extensions:
         raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext}. Allowed: {allowed_extensions}")
 
-    # Validate language if provided
     if language and language not in ("Hindi", "Tamil"):
         raise HTTPException(status_code=400, detail="Language must be 'Hindi' or 'Tamil'")
 
-    # Generate job ID and save file
     job_id = str(uuid.uuid4())
     safe_filename = f"{job_id}{ext}"
     file_path = os.path.join(settings.UPLOAD_DIR, safe_filename)
@@ -120,7 +125,6 @@ async def upload_audio(
     with open(file_path, "wb") as f:
         f.write(contents)
 
-    # Create DB record
     call = Call(
         id=job_id,
         filename=file.filename,
@@ -130,7 +134,8 @@ async def upload_audio(
     db.add(call)
     db.commit()
 
-    # Enqueue Celery task (non-blocking)
+    # Enqueue Celery task
+    from tasks.celery_tasks import process_call
     process_call.delay(job_id, file_path, language)
 
     logger.info(f"Uploaded {file.filename} → job_id: {job_id}")
@@ -155,6 +160,8 @@ async def get_job_status(job_id: str, db: Session = Depends(get_db)):
         sop_breakdown=call.sop_breakdown,
         payment_type=call.payment_type,
         rejection_reason=call.rejection_reason,
+        sentiment=call.sentiment,
+        keywords=call.keywords,
         error_message=call.error_message,
         created_at=call.created_at.isoformat() if call.created_at else None,
         completed_at=call.completed_at.isoformat() if call.completed_at else None,
@@ -207,24 +214,21 @@ async def get_dashboard_metrics(db: Session = Depends(get_db)):
     """Aggregate stats for the dashboard."""
     total = db.query(func.count(Call.id)).scalar() or 0
 
-    # Calls today
     today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     calls_today = db.query(func.count(Call.id)).filter(Call.created_at >= today_start).scalar() or 0
 
-    # Avg SOP score (completed only)
     avg_sop = db.query(func.avg(Call.sop_score)).filter(
         Call.status == "completed", Call.sop_score.isnot(None)
     ).scalar()
     avg_sop = round(avg_sop, 2) if avg_sop else None
 
-    # Rejection rate
     completed = db.query(func.count(Call.id)).filter(Call.status == "completed").scalar() or 0
     rejected = db.query(func.count(Call.id)).filter(
-        Call.status == "completed", Call.rejection_reason.isnot(None)
+        Call.status == "completed", Call.rejection_reason.isnot(None),
+        Call.rejection_reason != "NONE",
     ).scalar() or 0
     rejection_rate = round((rejected / completed * 100), 1) if completed > 0 else 0.0
 
-    # Payment distribution
     payment_rows = (
         db.query(Call.payment_type, func.count(Call.id))
         .filter(Call.payment_type.isnot(None))
@@ -233,7 +237,6 @@ async def get_dashboard_metrics(db: Session = Depends(get_db)):
     )
     payment_dist = {pt: cnt for pt, cnt in payment_rows}
 
-    # Language distribution
     lang_rows = (
         db.query(Call.language, func.count(Call.id))
         .filter(Call.language.isnot(None))
@@ -242,16 +245,14 @@ async def get_dashboard_metrics(db: Session = Depends(get_db)):
     )
     lang_dist = {lang: cnt for lang, cnt in lang_rows}
 
-    # Rejection reasons
     rej_rows = (
         db.query(Call.rejection_reason, func.count(Call.id))
-        .filter(Call.rejection_reason.isnot(None))
+        .filter(Call.rejection_reason.isnot(None), Call.rejection_reason != "NONE")
         .group_by(Call.rejection_reason)
         .all()
     )
     rej_dist = {reason: cnt for reason, cnt in rej_rows}
 
-    # Avg SOP breakdown
     avg_breakdown = None
     if completed > 0:
         calls_with_breakdown = (
@@ -266,7 +267,8 @@ async def get_dashboard_metrics(db: Session = Depends(get_db)):
                 if bd and isinstance(bd, dict):
                     count += 1
                     for k, v in bd.items():
-                        totals[k] = totals.get(k, 0) + (v or 0)
+                        if isinstance(v, (int, float)):
+                            totals[k] = totals.get(k, 0) + (v or 0)
             if count > 0:
                 avg_breakdown = {k: round(v / count, 2) for k, v in totals.items()}
 
@@ -285,5 +287,4 @@ async def get_dashboard_metrics(db: Session = Depends(get_db)):
 # ── Run ─────────────────────────────────────────────────
 if __name__ == "__main__":
     import uvicorn
-
     uvicorn.run("main:app", host="0.0.0.0", port=settings.PORT, reload=True)

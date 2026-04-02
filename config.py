@@ -8,11 +8,22 @@ load_dotenv()
 
 
 class Settings:
+    # ── API Authentication ──
+    API_KEY: str = os.getenv("API_KEY", "sk_track3_987654321")
+
+    # ── Sarvam AI (legacy fallback) ──
     SARVAM_API_KEY: str = os.getenv("SARVAM_API_KEY", "")
-    # LLM — Cerebras (free, OpenAI-compatible API)
+
+    # ── LLM — Cerebras (free, OpenAI-compatible API) ──
     LLM_API_KEY: str = os.getenv("LLM_API_KEY", "")
     LLM_BASE_URL: str = os.getenv("LLM_BASE_URL", "https://api.cerebras.ai/v1")
     LLM_MODEL: str = os.getenv("LLM_MODEL", "llama-3.1-8b")
+
+    # ── faster-whisper STT ──
+    WHISPER_MODEL: str = os.getenv("WHISPER_MODEL", "medium")
+    WHISPER_COMPUTE_TYPE: str = os.getenv("WHISPER_COMPUTE_TYPE", "int8")
+
+    # ── Infrastructure ──
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./callcenter.db")
     UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", "./uploads")

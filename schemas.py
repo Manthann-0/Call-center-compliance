@@ -1,18 +1,51 @@
 """
 Pydantic schemas for API request/response validation.
 """
-from typing import Optional, Dict, List
-from datetime import datetime
+from typing import Optional, Dict, List, Any
 from pydantic import BaseModel
 
 
-# ── Upload ──────────────────────────────────────────────
+# ── Call Analytics (New Strict API) ─────────────────────
+class CallAnalyticsRequest(BaseModel):
+    language: str
+    audioFormat: str
+    audioBase64: str
+
+
+class SOPValidation(BaseModel):
+    greeting: bool = False
+    identification: bool = False
+    problemStatement: bool = False
+    solutionOffering: bool = False
+    closing: bool = False
+    complianceScore: float = 0.0
+    adherenceStatus: str = "NOT_FOLLOWED"
+    explanation: str = ""
+
+
+class Analytics(BaseModel):
+    paymentPreference: str = "EMI"
+    rejectionReason: str = "NONE"
+    sentiment: str = "Neutral"
+
+
+class CallAnalyticsResponse(BaseModel):
+    status: str = "success"
+    language: str = ""
+    transcript: str = ""
+    summary: str = ""
+    sop_validation: SOPValidation = SOPValidation()
+    analytics: Analytics = Analytics()
+    keywords: List[str] = []
+
+
+# ── Upload (Legacy) ────────────────────────────────────
 class UploadResponse(BaseModel):
     job_id: str
     message: str
 
 
-# ── Job Status ──────────────────────────────────────────
+# ── Job Status (Legacy) ────────────────────────────────
 class JobStatus(BaseModel):
     job_id: str
     status: str
@@ -21,9 +54,11 @@ class JobStatus(BaseModel):
     transcript: Optional[str] = None
     summary: Optional[str] = None
     sop_score: Optional[float] = None
-    sop_breakdown: Optional[Dict[str, float]] = None
+    sop_breakdown: Optional[Dict[str, Any]] = None
     payment_type: Optional[str] = None
     rejection_reason: Optional[str] = None
+    sentiment: Optional[str] = None
+    keywords: Optional[List[str]] = None
     error_message: Optional[str] = None
     created_at: Optional[str] = None
     completed_at: Optional[str] = None

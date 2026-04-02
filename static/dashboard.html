@@ -135,12 +135,18 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .empty-state svg{width:56px;height:56px;margin-bottom:12px;opacity:.4}
 .empty-state h3{font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px}
 .empty-state p{font-size:13px}
+/* ── Poll indicator ── */
+.poll-indicator{position:fixed;top:12px;right:12px;padding:4px 10px;border-radius:12px;font-size:10px;font-weight:600;background:rgba(59,130,246,.1);color:#3B82F6;opacity:0;transition:opacity .3s;z-index:200;pointer-events:none}
+.poll-indicator.show{opacity:1}
 /* ── Responsive ── */
 @media(max-width:1100px){.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}.metrics-row{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){.sidebar{transform:translateX(-100%)}.main{margin-left:0}}
 </style>
 </head>
 <body>
+<!-- Poll indicator -->
+<div class="poll-indicator" id="pollIndicator">● Syncing</div>
+
 <!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar">
   <div class="sidebar-brand"><h1>CallCenter AI</h1><p>Compliance Analytics</p></div>
@@ -268,7 +274,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 const API=window.location.origin;
 let DEMO_MODE=false;
 let allCalls=[],metrics=null,activeFilters={payment:null,language:null},tablePaymentFilter='',charts={};
+
+// ── DATA HASHING — prevent unnecessary re-renders ──
+let _lastCallsHash='',_lastMetricsHash='';
+function hashData(d){return JSON.stringify(d);}
+
 const SOP_LABELS={greeting_identity_verification:'Greeting & Identity Verification',loan_product_explanation:'Loan/Product Explanation',payment_options_offered:'Payment Options Offered',objection_handling:'Objection Handling',closing_next_steps:'Closing & Next Steps'};
+// Also support new SOP keys from the refactored API
+const SOP_LABELS_NEW={greeting:'Greeting',identification:'Identification',problemStatement:'Problem Statement',solutionOffering:'Solution Offering',closing:'Closing'};
 
 // ── Navigation ──
 function showPage(id){
@@ -280,14 +293,13 @@ function showPage(id){
 
 // ── Filters ──
 function toggleFilter(type,val){
-  const chips=document.querySelectorAll(`.sidebar-section .filter-chip`);
   if(activeFilters[type]===val){activeFilters[type]=null;}else{activeFilters[type]=val;}
-  chips.forEach(c=>{const t=c.textContent.trim();c.classList.remove('active');});
   document.querySelectorAll('.filter-chip').forEach(c=>{
+    c.classList.remove('active');
     const txt=c.textContent.trim();
     if((type==='payment'&&txt.includes(val)&&activeFilters.payment===val)||(type==='language'&&txt.includes(val)&&activeFilters.language===val))c.classList.add('active');
   });
-  fetchCalls();
+  fetchCalls(true);
 }
 function setTableFilter(el,val){
   document.querySelectorAll('.table-controls .pill').forEach(p=>p.classList.remove('active'));
@@ -295,18 +307,41 @@ function setTableFilter(el,val){
 }
 function filterTable(){renderTable();}
 
-// ── Data Fetching ──
-async function fetchMetrics(){
-  try{const r=await fetch(API+'/dashboard/metrics');metrics=await r.json();renderMetrics();DEMO_MODE=false;}
-  catch(e){if(!DEMO_MODE){DEMO_MODE=true;metrics=demoMetrics();renderMetrics();}}
+// ── Poll indicator ──
+function showPollIndicator(){
+  const el=document.getElementById('pollIndicator');
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),1200);
 }
-async function fetchCalls(){
+
+// ── Data Fetching (with hash diffing to prevent unnecessary re-renders) ──
+async function fetchMetrics(force){
+  try{
+    const r=await fetch(API+'/dashboard/metrics');
+    const data=await r.json();
+    const hash=hashData(data);
+    if(!force&&hash===_lastMetricsHash){return;}
+    _lastMetricsHash=hash;
+    metrics=data;
+    renderMetrics();
+    DEMO_MODE=false;
+  }
+  catch(e){if(!DEMO_MODE){DEMO_MODE=true;metrics=demoMetrics();_lastMetricsHash='';renderMetrics();}}
+}
+async function fetchCalls(force){
   try{
     let url=API+'/calls?';
     if(activeFilters.payment)url+=`payment_type=${encodeURIComponent(activeFilters.payment)}&`;
     if(activeFilters.language)url+=`language=${encodeURIComponent(activeFilters.language)}&`;
-    const r=await fetch(url);allCalls=await r.json();renderTable();renderQuickStats();renderRejections();DEMO_MODE=false;
-  }catch(e){if(!DEMO_MODE){DEMO_MODE=true;allCalls=demoCalls();renderTable();renderQuickStats();renderRejections();}}
+    const r=await fetch(url);
+    const data=await r.json();
+    const hash=hashData(data);
+    if(!force&&hash===_lastCallsHash){return;}
+    _lastCallsHash=hash;
+    allCalls=data;
+    renderTable();renderQuickStats();renderRejections();
+    DEMO_MODE=false;
+  }catch(e){if(!DEMO_MODE){DEMO_MODE=true;allCalls=demoCalls();_lastCallsHash='';renderTable();renderQuickStats();renderRejections();}}
 }
 async function checkHealth(){
   try{const r=await fetch(API+'/health');const d=await r.json();
@@ -342,8 +377,12 @@ function sopColor(v){return v>=0.7?'var(--green)':v>=0.4?'var(--amber)':'var(--r
 function renderSOPBars(bd){
   const c=document.getElementById('sopBarsContainer');
   if(!bd||!Object.keys(bd).length){c.innerHTML='<div class="empty-state"><p>No data yet</p></div>';return;}
-  c.innerHTML=Object.entries(SOP_LABELS).map(([k,l])=>{
-    const v=bd[k]||0;return`<div class="sop-item"><div class="sop-label"><span>${l}</span><span style="color:${sopColor(v)};font-weight:700">${v.toFixed(2)}</span></div><div class="sop-bar"><div class="sop-bar-fill" style="width:${v*100}%;background:${sopColor(v)}"></div></div></div>`;
+  // Support both old and new SOP key formats
+  const labels=Object.keys(bd).length<=5&&bd.greeting!==undefined?SOP_LABELS_NEW:SOP_LABELS;
+  const keysToUse=Object.keys(bd).filter(k=>typeof bd[k]==='number');
+  c.innerHTML=keysToUse.map(k=>{
+    const l=labels[k]||SOP_LABELS[k]||SOP_LABELS_NEW[k]||k;
+    const v=bd[k]||0;return`<div class="sop-item"><div class="sop-label"><span>${l}</span><span style="color:${sopColor(v)};font-weight:700">${typeof v==='number'?v.toFixed(2):v}</span></div><div class="sop-bar"><div class="sop-bar-fill" style="width:${(typeof v==='number'?v:0)*100}%;background:${sopColor(v)}"></div></div></div>`;
   }).join('');
 }
 
@@ -370,10 +409,10 @@ function renderRejChart(dist){
 }
 
 // ── Table ──
-function paymentBadge(t){const m={'EMI':'badge-blue','Full Payment':'badge-green','Partial Payment':'badge-amber','Down Payment':'badge-pink'};return t?`<span class="badge ${m[t]||'badge-gray'}">${t}</span>`:'<span class="badge badge-gray">—</span>';}
+function paymentBadge(t){const m={'EMI':'badge-blue','Full Payment':'badge-green','FULL_PAYMENT':'badge-green','Partial Payment':'badge-amber','PARTIAL_PAYMENT':'badge-amber','Down Payment':'badge-pink','DOWN_PAYMENT':'badge-pink'};return t&&t!=='NONE'?`<span class="badge ${m[t]||'badge-gray'}">${t}</span>`:'<span class="badge badge-gray">—</span>';}
 function langBadge(l){return l==='Hindi'?'<span class="badge badge-purple">Hindi</span>':l==='Tamil'?'<span class="badge badge-cyan">Tamil</span>':'<span class="badge badge-gray">—</span>';}
 function statusBadge(s){const m={completed:'badge-green',processing:'badge-blue',pending:'badge-amber',failed:'badge-red'};return`<span class="badge ${m[s]||'badge-gray'}">${s}</span>`;}
-function sopBadge(v){if(v===null||v===undefined)return'—';const lbl=v>=0.7?'Good':v>=0.4?'Partial':'Poor';const cls=v>=0.7?'badge-green':v>=0.4?'badge-amber':'badge-red';const col=v>=0.7?'var(--green)':v>=0.4?'var(--amber)':'var(--red)';return`<div class="mini-bar"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${v*100}%;background:${col}"></div></div><span class="badge ${cls}">${v.toFixed(2)}</span></div>`;}
+function sopBadge(v){if(v===null||v===undefined)return'—';const col=v>=0.7?'var(--green)':v>=0.4?'var(--amber)':'var(--red)';const cls=v>=0.7?'badge-green':v>=0.4?'badge-amber':'badge-red';return`<div class="mini-bar"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${v*100}%;background:${col}"></div></div><span class="badge ${cls}">${v.toFixed(2)}</span></div>`;}
 function fmtTime(iso){if(!iso)return'—';const d=new Date(iso);return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});}
 
 function renderTable(){
@@ -390,7 +429,7 @@ function renderTable(){
       <td>${langBadge(c.language)}</td>
       <td>${paymentBadge(c.payment_type)}</td>
       <td>${sopBadge(c.sop_score)}</td>
-      <td>${c.rejection_reason?`<span class="badge badge-red">${c.rejection_reason}</span>`:'<span style="color:#CBD5E1">—</span>'}</td>
+      <td>${c.rejection_reason&&c.rejection_reason!=='NONE'?`<span class="badge badge-red">${c.rejection_reason}</span>`:'<span style="color:#CBD5E1">—</span>'}</td>
       <td>${statusBadge(c.status)}</td>
       <td style="font-size:11px;color:var(--text-secondary)">${fmtTime(c.created_at)}</td>
     </tr>
@@ -407,7 +446,11 @@ async function toggleRow(id){
     const r=await fetch(API+'/calls/'+id);const d=await r.json();
     const det=document.getElementById('detail-'+id);
     let sopHtml='';
-    if(d.sop_breakdown){sopHtml='<div class="expanded-sop">'+Object.entries(SOP_LABELS).map(([k,l])=>{const v=d.sop_breakdown[k]||0;return`<div class="sop-item"><div class="sop-label"><span>${l}</span><span style="color:${sopColor(v)};font-weight:700">${v.toFixed(2)}</span></div><div class="sop-bar"><div class="sop-bar-fill" style="width:${v*100}%;background:${sopColor(v)}"></div></div></div>`;}).join('')+'</div>';}
+    if(d.sop_breakdown){
+      const labels=d.sop_breakdown.greeting!==undefined?SOP_LABELS_NEW:SOP_LABELS;
+      const numericKeys=Object.keys(d.sop_breakdown).filter(k=>typeof d.sop_breakdown[k]==='number');
+      sopHtml='<div class="expanded-sop">'+numericKeys.map(k=>{const l=labels[k]||SOP_LABELS[k]||SOP_LABELS_NEW[k]||k;const v=d.sop_breakdown[k]||0;return`<div class="sop-item"><div class="sop-label"><span>${l}</span><span style="color:${sopColor(v)};font-weight:700">${typeof v==='number'?v.toFixed(2):v}</span></div><div class="sop-bar"><div class="sop-bar-fill" style="width:${(typeof v==='number'?v:0)*100}%;background:${sopColor(v)}"></div></div></div>`;}).join('')+'</div>';
+    }
     det.innerHTML=`<h4>Summary</h4><p>${d.summary||'No summary available'}</p><h4>SOP Breakdown</h4>${sopHtml||'<p>Not available</p>'}<h4 style="margin-top:12px">Transcript</h4><p style="max-height:200px;overflow-y:auto;background:#fff;padding:12px;border-radius:8px;font-size:11px;line-height:1.7">${d.transcript||'Not available'}</p>`;
   }catch(e){document.getElementById('detail-'+id).innerHTML='<p>Failed to load details</p>';}
 }
@@ -424,10 +467,10 @@ function renderQuickStats(){
 
 // ── Rejections Page ──
 function renderRejections(){
-  const rejected=allCalls.filter(c=>c.rejection_reason);
+  const rejected=allCalls.filter(c=>c.rejection_reason&&c.rejection_reason!=='NONE');
   const counts={};rejected.forEach(c=>{counts[c.rejection_reason]=(counts[c.rejection_reason]||0)+1;});
   const cards=document.getElementById('rejectionCards');
-  const colors={'Price Too High':'#EF4444','Already Paid':'#3B82F6','Wrong Timing':'#F59E0B','Disputes Loan':'#8B5CF6','No Money':'#EC4899','Will Pay Later':'#06B6D4','Other':'#6B7280'};
+  const colors={'Price Too High':'#EF4444','HIGH_INTEREST':'#EF4444','Already Paid':'#3B82F6','ALREADY_PAID':'#3B82F6','Wrong Timing':'#F59E0B','BUDGET_CONSTRAINTS':'#F59E0B','Disputes Loan':'#8B5CF6','NOT_INTERESTED':'#8B5CF6','No Money':'#EC4899','Will Pay Later':'#06B6D4','Other':'#6B7280'};
   cards.innerHTML=Object.entries(counts).map(([r,n])=>`<div class="card" style="border-left:4px solid ${colors[r]||'#6B7280'}"><div class="card-title">${r}</div><div style="font-size:28px;font-weight:800">${n}</div><div style="font-size:12px;color:var(--text-secondary)">${(n/rejected.length*100).toFixed(0)}% of rejections</div></div>`).join('');
   const tbody=document.getElementById('rejTableBody');
   tbody.innerHTML=rejected.map(c=>`<tr><td>${c.filename}</td><td>${langBadge(c.language)}</td><td><span class="badge badge-red">${c.rejection_reason}</span></td><td>${sopBadge(c.sop_score)}</td><td style="font-size:11px">${fmtTime(c.created_at)}</td></tr>`).join('')||'<tr><td colspan="5"><div class="empty-state"><p>No rejected calls</p></div></td></tr>';
@@ -466,9 +509,9 @@ async function pollJob(jobId){
       if(d.status==='completed'){
         clearInterval(iv);
         card.querySelector('.progress-steps').innerHTML=`<div class="step done"><div class="step-dot">✓</div>Uploaded</div><div class="step-line done"></div><div class="step done"><div class="step-dot">✓</div>Processed</div><div class="step-line done"></div><div class="step done"><div class="step-dot">✓</div>Complete</div>`;
-        let sopHtml='';if(d.sop_breakdown){sopHtml=Object.entries(SOP_LABELS).map(([k,l])=>{const v=d.sop_breakdown[k]||0;return`<div class="sop-item"><div class="sop-label"><span>${l}</span><span style="color:${sopColor(v)};font-weight:700">${v.toFixed(2)}</span></div><div class="sop-bar"><div class="sop-bar-fill" style="width:${v*100}%;background:${sopColor(v)}"></div></div></div>`;}).join('');}
-        document.getElementById('result-'+jobId).innerHTML=`<h4>Summary</h4><p>${d.summary||'—'}</p><h4 style="margin-top:12px">SOP Score: ${sopBadge(d.sop_score)}</h4>${sopHtml}<div style="margin-top:12px;display:flex;gap:8px">${paymentBadge(d.payment_type)} ${d.rejection_reason?`<span class="badge badge-red">${d.rejection_reason}</span>`:''}</div>`;
-        fetchCalls();fetchMetrics();
+        let sopHtml='';if(d.sop_breakdown){const labels=d.sop_breakdown.greeting!==undefined?SOP_LABELS_NEW:SOP_LABELS;const numericKeys=Object.keys(d.sop_breakdown).filter(k=>typeof d.sop_breakdown[k]==='number');sopHtml=numericKeys.map(k=>{const l=labels[k]||SOP_LABELS[k]||SOP_LABELS_NEW[k]||k;const v=d.sop_breakdown[k]||0;return`<div class="sop-item"><div class="sop-label"><span>${l}</span><span style="color:${sopColor(v)};font-weight:700">${typeof v==='number'?v.toFixed(2):v}</span></div><div class="sop-bar"><div class="sop-bar-fill" style="width:${(typeof v==='number'?v:0)*100}%;background:${sopColor(v)}"></div></div></div>`;}).join('');}
+        document.getElementById('result-'+jobId).innerHTML=`<h4>Summary</h4><p>${d.summary||'—'}</p><h4 style="margin-top:12px">SOP Score: ${sopBadge(d.sop_score)}</h4>${sopHtml}<div style="margin-top:12px;display:flex;gap:8px">${paymentBadge(d.payment_type)} ${d.rejection_reason&&d.rejection_reason!=='NONE'?`<span class="badge badge-red">${d.rejection_reason}</span>`:''}</div>`;
+        fetchCalls(true);fetchMetrics(true);
       }else if(d.status==='failed'){
         clearInterval(iv);
         card.querySelector('.progress-steps').innerHTML=`<div class="step done"><div class="step-dot">✓</div>Uploaded</div><div class="step-line"></div><div class="step" style="color:var(--red)"><div class="step-dot">✗</div>Failed</div>`;
@@ -494,8 +537,17 @@ function demoCalls(){return[
 ];}
 
 // ── Init ──
-checkHealth();fetchMetrics();fetchCalls();
-setInterval(()=>{fetchCalls();fetchMetrics();checkHealth();},10000);
+checkHealth();fetchMetrics(true);fetchCalls(true);
+
+// Poll every 30 seconds (not 10) and only re-render when data changes
+setInterval(()=>{
+  showPollIndicator();
+  fetchCalls(false);
+  fetchMetrics(false);
+},30000);
+
+// Health check every 60 seconds
+setInterval(checkHealth,60000);
 </script>
 </body>
 </html>
