@@ -4,6 +4,10 @@ Multilingual call center compliance analytics platform with AI-powered transcrip
 
 ---
 
+**Processing pipeline:** Audio upload → FFmpeg preprocessing → Sarvam STT → Cerebras LLM analysis → SOP validation → DB storage → JSON response.
+
+---
+
 ## Setup Instructions
 
 **Prerequisites:** Python 3.11+, Redis, FFmpeg, Sarvam AI and Cerebras API keys.
@@ -70,7 +74,12 @@ Client (Dashboard / API)
    └── ChromaDB             (vector search)
 ```
 
-**Processing pipeline:** Audio upload → FFmpeg preprocessing → Sarvam STT → Cerebras LLM analysis → SOP validation → DB storage → JSON response.
+### Data & Storage
+- **SQLite** - Lightweight relational database (default)
+- **PostgreSQL** - Production-ready alternative (supported)
+
+
+
 
 ---
 
@@ -84,7 +93,7 @@ Client (Dashboard / API)
 | Vector Search | ChromaDB |
 | Audio | FFmpeg, Pydub |
 | Frontend | Vanilla JS, Chart.js, HTML/CSS |
-| Deployment | Railway / Render |
+| Deployment | Railway |
 
 ---
 
@@ -94,7 +103,8 @@ Client (Dashboard / API)
 - **Cerebras – Llama 3.1-8B:** LLM for compliance scoring, sentiment analysis, payment categorization, and keyword extraction. Runs on Cerebras CS-2 hardware for fast inference.
 - **ChromaDB:** Semantic search and indexing of call transcripts using vector embeddings.
 - **Amazon Q Developer:** Used for code assistance during development.
-- **Claude Sonnet4.6:** Used for code assistance during development.
+- **Claude - Sonnet4.6:** Used for code assistance during development.
+
 ---
 
 ## Known Limitations
