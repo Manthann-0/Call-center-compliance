@@ -89,7 +89,7 @@ TRANSCRIPT:
 Return ONLY the JSON object. No markdown. No explanation."""
 
 # Maximum transcript length to send to LLM (chars) — prevents token limit issues
-MAX_TRANSCRIPT_CHARS = 8000
+MAX_TRANSCRIPT_CHARS = 6000  # Reduced from 8000 for faster processing
 
 
 def _parse_llm_response(content: str) -> Dict[str, Any]:
@@ -146,8 +146,8 @@ def _call_llm(transcript: str) -> Dict[str, Any]:
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ],
-            temperature=0.1,
-            max_tokens=2000,
+            temperature=0.0,  # Reduced from 0.1 for faster, more deterministic responses
+            max_tokens=1000,  # Reduced from 2000 for faster processing
         )
     except Exception as e:
         logger.error(f"LLM API call failed: {e}")

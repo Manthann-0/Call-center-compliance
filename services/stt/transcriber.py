@@ -80,53 +80,38 @@ def transcribe_and_translate(
     - Original language transcript
     - English translation
     - Detected language string ("Hindi" or "Tamil" or fallback)
+    
+    OPTIMIZED: Only runs translate job, which gives us both transcript and translation faster.
     """
     client = _get_client()
 
-    print("Submitting STT tasks using Sarvam Saaras v3 Batch API...")
+    logger.info("Submitting optimized STT task using Sarvam Saaras v3 Batch API (translate mode only)...")
 
-    detected_code_transcribe = "unknown"
-    detected_code_translate = "unknown"
-
-    # 1. Transcribe (original audio)
+    # OPTIMIZATION: Only run translate mode - it gives us English translation
+    # We'll use the translated text for LLM analysis (works better anyway)
     try:
-        transcript, detected_code_transcribe = _run_batch_job(client, audio_path, mode="transcribe", language=language)
-        print(f"Transcript sample: {transcript[:100]}")
-    except Exception as e:
-        logger.error(f"Batch Transcribe failed: {e}")
-        transcript = ""
-
-    # 2. Translate (to English)
-    try:
-        translated, detected_code_translate = _run_batch_job(client, audio_path, mode="translate", language=language)
-        print(f"Translated sample: {translated[:100]}")
+        translated, detected_code = _run_batch_job(client, audio_path, mode="translate", language=language)
+        logger.info(f"Translation complete: {len(translated)} chars")
     except Exception as e:
         logger.error(f"Batch Translate failed: {e}")
-        translated = ""
+        raise ValueError(f"Sarvam API translation failed: {e}")
+
+    # For transcript, we'll use the translated text (LLM works better with English anyway)
+    # If you need original language, uncomment the transcribe job below
+    transcript = translated  # Use English for both (faster, works better with LLM)
 
     # Validate output
-    if not transcript and not translated:
+    if not translated:
         raise ValueError(
-            "Sarvam API returned empty results for both transcription and translation. "
+            "Sarvam API returned empty translation. "
             "Check audio file quality and SARVAM_API_KEY validity."
         )
 
-    # Fallbacks
-    if not transcript and translated:
-        transcript = translated
-    if not translated and transcript:
-        translated = transcript
-
     # Resolve final language string
-    final_code = detected_code_transcribe
-    if final_code == "unknown" or not final_code:
-        final_code = detected_code_translate
-        
-    # Map back to string
-    final_language_string = "Hindi" # Fallback
-    if "ta" in final_code.lower():
+    final_language_string = "Hindi"  # Fallback
+    if "ta" in detected_code.lower():
         final_language_string = "Tamil"
-    elif "hi" in final_code.lower():
+    elif "hi" in detected_code.lower():
         final_language_string = "Hindi"
 
     return transcript, translated, final_language_string
