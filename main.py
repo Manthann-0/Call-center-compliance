@@ -86,6 +86,21 @@ async def root():
     return JSONResponse({"message": "CallCenter Compliance AI — API is running. Dashboard not found."})
 
 
+@app.post("/", include_in_schema=False)
+async def root_post(request: Request):
+    """Redirect POST requests to the correct API endpoint."""
+    return JSONResponse(
+        status_code=200,
+        content={
+            "message": "Use POST /api/call-analytics for call analysis",
+            "endpoint": "/api/call-analytics",
+            "method": "POST",
+            "required_headers": {"x-api-key": "your-api-key", "Content-Type": "application/json"},
+            "required_body": {"language": "Auto|Hindi|Tamil", "audioFormat": "mp3", "audioBase64": "base64-encoded-audio"}
+        }
+    )
+
+
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
     """API health check."""
@@ -292,6 +307,21 @@ async def get_dashboard_metrics(db: Session = Depends(get_db)):
         language_distribution=lang_dist,
         rejection_reasons=rej_dist,
         avg_sop_breakdown=avg_breakdown,
+    )
+
+
+@app.post("/analyze", include_in_schema=False)
+@app.post("/analyse", include_in_schema=False)
+@app.post("/call-analytics", include_in_schema=False)
+async def redirect_to_api(request: Request):
+    """Redirect common endpoint variations to the correct API."""
+    return JSONResponse(
+        status_code=200,
+        content={
+            "message": "Please use POST /api/call-analytics endpoint",
+            "correct_endpoint": "/api/call-analytics",
+            "documentation": "Send JSON with {language, audioFormat, audioBase64} and x-api-key header"
+        }
     )
 
 
