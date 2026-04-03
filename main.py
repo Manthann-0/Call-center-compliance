@@ -21,6 +21,7 @@ from schemas import UploadResponse, JobStatus, DashboardMetrics, HealthResponse
 
 # Import the new call-analytics router
 from api.call_analytics import router as analytics_router
+from api.auth import APIKeyError
 
 # ── Logging ─────────────────────────────────────────────
 logging.basicConfig(
@@ -48,12 +49,22 @@ app.add_middleware(
 # ── Include API Routers ─────────────────────────────────
 app.include_router(analytics_router, tags=["Call Analytics"])
 
+
+# ── Exception Handlers ──────────────────────────────────
+@app.exception_handler(APIKeyError)
+async def api_key_error_handler(request, exc: APIKeyError):
+    """Return clean 401 JSON for auth failures."""
+    return JSONResponse(
+        status_code=401,
+        content={"status": "error", "message": exc.message},
+    )
+
 # ── Startup ─────────────────────────────────────────────
 @app.on_event("startup")
 def on_startup():
     init_db()
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
-    logger.info("Database initialized, upload dir ready.")
+    logger.info("Database initialized, upload dir ready. Using Sarvam Saaras for STT.")
 
 
 # ── Static Files ────────────────────────────────────────

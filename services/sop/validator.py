@@ -1,6 +1,7 @@
 """
 SOP Validator — normalizes and validates LLM output to match strict API response format.
 Ensures ALL required fields exist and conform to allowed values.
+Auto-calculates complianceScore from boolean fields if LLM provides an unreasonable value.
 """
 import logging
 from typing import Dict, Any, List
@@ -12,6 +13,9 @@ VALID_PAYMENT_TYPES = {"EMI", "FULL_PAYMENT", "PARTIAL_PAYMENT", "DOWN_PAYMENT"}
 VALID_REJECTION_REASONS = {"HIGH_INTEREST", "BUDGET_CONSTRAINTS", "ALREADY_PAID", "NOT_INTERESTED", "NONE"}
 VALID_SENTIMENTS = {"Positive", "Neutral", "Negative"}
 VALID_ADHERENCE = {"FOLLOWED", "NOT_FOLLOWED"}
+
+# Boolean SOP fields used for auto-calculating compliance score
+SOP_BOOLEAN_FIELDS = ["greeting", "identification", "problemStatement", "solutionOffering", "closing"]
 
 
 def _normalize_bool(value) -> bool:
@@ -34,6 +38,15 @@ def _normalize_score(value) -> float:
         return max(0.0, min(1.0, round(score, 2)))
     except (ValueError, TypeError):
         return 0.0
+
+
+def _calculate_score_from_booleans(sop_bools: Dict[str, bool]) -> float:
+    """
+    Calculate compliance score from boolean SOP fields.
+    Each field contributes equally (0.2 each for 5 fields = 1.0 max).
+    """
+    total = sum(1 for field in SOP_BOOLEAN_FIELDS if sop_bools.get(field, False))
+    return round(total / len(SOP_BOOLEAN_FIELDS), 2)
 
 
 def _normalize_payment(value) -> str:
@@ -118,7 +131,16 @@ def normalize_response(
     Normalize LLM output into the strict API response format.
     Ensures ALL required fields exist with valid values.
 
-    Returns the complete response dict matching the API spec.
+    Returns the complete response dict matching the API spec:
+    {
+        "status": "success",
+        "language": "...",
+        "transcript": "...",
+        "summary": "...",
+        "sop_validation": { ... },
+        "analytics": { ... },
+        "keywords": [ ... ]
+    }
     """
     # ── Extract summary ──
     summary = str(llm_output.get("summary", "")).strip()
@@ -130,23 +152,46 @@ def normalize_response(
     if not isinstance(sop_raw, dict):
         sop_raw = {}
 
-    compliance_score = _normalize_score(sop_raw.get("complianceScore", 0.0))
-
-    sop_validation = {
+    # Normalize boolean fields
+    sop_bools = {
         "greeting": _normalize_bool(sop_raw.get("greeting", False)),
         "identification": _normalize_bool(sop_raw.get("identification", False)),
         "problemStatement": _normalize_bool(sop_raw.get("problemStatement", False)),
         "solutionOffering": _normalize_bool(sop_raw.get("solutionOffering", False)),
         "closing": _normalize_bool(sop_raw.get("closing", False)),
-        "complianceScore": compliance_score,
-        "adherenceStatus": _normalize_adherence(compliance_score),
-        "explanation": str(sop_raw.get("explanation", "SOP compliance evaluated based on transcript analysis.")).strip(),
     }
+
+    # Get LLM's compliance score
+    llm_score = _normalize_score(sop_raw.get("complianceScore", 0.0))
+
+    # Auto-calculate from booleans as a sanity check
+    calculated_score = _calculate_score_from_booleans(sop_bools)
+
+    # Use LLM's score if it's reasonable (within 0.3 of calculated), otherwise use calculated
+    if llm_score == 0.0 or abs(llm_score - calculated_score) > 0.3:
+        compliance_score = calculated_score
+    else:
+        compliance_score = llm_score
+
+    # Determine adherence status from score
+    adherence_status = _normalize_adherence(compliance_score)
 
     # Override adherenceStatus if LLM provided one and it's valid
     llm_adherence = str(sop_raw.get("adherenceStatus", "")).strip().upper()
     if llm_adherence in VALID_ADHERENCE:
-        sop_validation["adherenceStatus"] = llm_adherence
+        adherence_status = llm_adherence
+
+    # Ensure explanation is never empty
+    explanation = str(sop_raw.get("explanation", "")).strip()
+    if not explanation:
+        explanation = "SOP compliance evaluated based on transcript analysis."
+
+    sop_validation = {
+        **sop_bools,
+        "complianceScore": compliance_score,
+        "adherenceStatus": adherence_status,
+        "explanation": explanation,
+    }
 
     # ── Extract and normalize analytics ──
     analytics_raw = llm_output.get("analytics", {})

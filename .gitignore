@@ -9,3 +9,5 @@ dist/
 build/
 .venv/
 venv/
+chroma_db/
+tmp_out/

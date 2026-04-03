@@ -18,7 +18,6 @@
 --shadow-lg:0 10px 25px rgba(0,0,0,.08);
 }
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden}
-/* ── Sidebar ── */
 .sidebar{width:240px;min-height:100vh;background:var(--sidebar);color:#CBD5E1;display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;transition:transform .3s}
 .sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
 .sidebar-brand h1{font-size:18px;font-weight:800;color:#fff;letter-spacing:-.3px}
@@ -39,14 +38,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .status-dot{width:7px;height:7px;border-radius:50%;background:#059669;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .sidebar-footer .clock{color:#64748B}
-/* ── Main ── */
 .main{margin-left:240px;flex:1;padding:28px 32px;min-height:100vh}
 .page{display:none}.page.active{display:block}
-/* ── Top Header ── */
 .top-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
 .top-header h2{font-size:22px;font-weight:700;color:var(--text)}
 .top-header p{font-size:13px;color:var(--text-secondary);margin-top:2px}
-/* ── Metric Cards ── */
 .metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
 .metric-card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--border);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
 .metric-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
@@ -55,18 +51,15 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .metric-card .sub{font-size:11px;color:var(--text-secondary)}
 .metric-card .bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--border)}
 .metric-card .bar-fill{height:100%;border-radius:0 2px 0 0;transition:width .8s ease}
-/* ── Cards / Panels ── */
 .card{background:var(--card);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:20px}
 .card-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
-/* ── SOP Bars ── */
 .sop-item{margin-bottom:14px}
 .sop-item .sop-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}
 .sop-item .sop-label span:first-child{font-weight:500;color:var(--text)}
 .sop-bar{height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden}
 .sop-bar-fill{height:100%;border-radius:4px;transition:width 1s ease}
-/* ── Table ── */
 .table-controls{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
 .search-input{padding:8px 14px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;width:260px;outline:none;transition:border .2s}
 .search-input:focus{border-color:var(--primary)}
@@ -89,14 +82,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .mini-bar{display:inline-flex;align-items:center;gap:6px;min-width:100px}
 .mini-bar-track{flex:1;height:6px;background:#F1F5F9;border-radius:3px;overflow:hidden}
 .mini-bar-fill{height:100%;border-radius:3px}
-/* ── Expanded Row ── */
 .expanded-row{display:none;background:#F8FAFC}
 .expanded-row.show{display:table-row}
 .expanded-content{padding:16px 24px}
 .expanded-content h4{font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
 .expanded-content p{font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px}
 .expanded-sop{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
-/* ── Upload Area ── */
 .upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:48px;text-align:center;cursor:pointer;transition:all .3s;background:var(--card)}
 .upload-zone:hover,.upload-zone.dragover{border-color:var(--primary);background:var(--primary-glow)}
 .upload-zone svg{width:48px;height:48px;color:var(--primary-light);margin-bottom:12px}
@@ -109,7 +100,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .btn-primary{padding:10px 24px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
 .btn-primary:hover{background:#1E40AF;box-shadow:0 4px 12px rgba(29,78,216,.3)}
 .btn-primary:disabled{opacity:.5;cursor:not-allowed}
-/* ── Job Tracker ── */
 .job-tracker{margin-top:24px}
 .job-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px;box-shadow:var(--shadow)}
 .job-card .job-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
@@ -125,29 +115,30 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .result-preview{background:#F8FAFC;border-radius:8px;padding:16px}
 .result-preview h4{font-size:13px;font-weight:600;margin-bottom:8px}
 .result-preview p{font-size:12px;color:var(--text-secondary);line-height:1.6}
-/* ── Quick Stats ── */
 .stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F1F5F9}
 .stat-row:last-child{border:none}
 .stat-row .stat-label{font-size:12px;color:var(--text-secondary)}
 .stat-row .stat-value{font-size:14px;font-weight:700}
-/* ── Empty State ── */
 .empty-state{text-align:center;padding:48px;color:var(--text-secondary)}
 .empty-state svg{width:56px;height:56px;margin-bottom:12px;opacity:.4}
 .empty-state h3{font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px}
 .empty-state p{font-size:13px}
-/* ── Poll indicator ── */
 .poll-indicator{position:fixed;top:12px;right:12px;padding:4px 10px;border-radius:12px;font-size:10px;font-weight:600;background:rgba(59,130,246,.1);color:#3B82F6;opacity:0;transition:opacity .3s;z-index:200;pointer-events:none}
 .poll-indicator.show{opacity:1}
-/* ── Responsive ── */
+.processing-wave{display:flex;align-items:center;justify-content:center;gap:6px;margin:24px 0 16px}
+.processing-wave span{display:block;width:4px;height:24px;background:var(--primary);border-radius:2px;animation:wave 1.2s ease-in-out infinite}
+.processing-wave span:nth-child(2){animation-delay:.1s;background:var(--primary-light)}
+.processing-wave span:nth-child(3){animation-delay:.2s;background:#8B5CF6}
+.processing-wave span:nth-child(4){animation-delay:.3s;background:#06B6D4}
+.processing-wave span:nth-child(5){animation-delay:.4s;background:#EC4899}
+@keyframes wave{0%,100%{transform:scaleY(0.5);opacity:.5}50%{transform:scaleY(1.5);opacity:1}}
 @media(max-width:1100px){.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}.metrics-row{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){.sidebar{transform:translateX(-100%)}.main{margin-left:0}}
 </style>
 </head>
 <body>
-<!-- Poll indicator -->
 <div class="poll-indicator" id="pollIndicator">● Syncing</div>
 
-<!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar">
   <div class="sidebar-brand"><h1>CallCenter AI</h1><p>Compliance Analytics</p></div>
   <nav class="sidebar-nav">
@@ -184,10 +175,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </aside>
 
-<!-- ═══ MAIN CONTENT ═══ -->
 <div class="main">
 
-<!-- ── Dashboard Page ── -->
 <div class="page active" id="page-dashboard">
   <div class="top-header"><div><h2>Dashboard</h2><p>Real-time compliance monitoring</p></div></div>
 
@@ -211,7 +200,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <div class="stat-row"><span class="stat-label">Processing</span><span class="stat-value" id="qProcessing">0</span></div>
       <div class="stat-row"><span class="stat-label">Failed</span><span class="stat-value" id="qFailed">0</span></div>
       <div class="stat-row"><span class="stat-label">Good SOP (≥0.7)</span><span class="stat-value" id="qGood">0</span></div>
-      <div class="stat-row"><span class="stat-label">Poor SOP (<0.4)</span><span class="stat-value" id="qPoor">0</span></div>
+      <div class="stat-row"><span class="stat-label">Poor SOP (&lt;0.4)</span><span class="stat-value" id="qPoor">0</span></div>
     </div></div>
   </div>
 
@@ -233,7 +222,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
-<!-- ── Upload Page ── -->
 <div class="page" id="page-upload">
   <div class="top-header"><div><h2>Upload &amp; Analyse</h2><p>Upload audio files for AI-powered compliance analysis</p></div></div>
   <div class="card">
@@ -245,20 +233,18 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     </div>
     <input type="file" id="fileInput" accept=".mp3,.wav,.m4a,.ogg,.flac,.webm" style="display:none" onchange="onFileSelect(this)">
     <div class="upload-form">
-      <div class="form-group"><label>Language</label><select id="langSelect"><option value="">Auto-detect</option><option value="Hindi">Hindi / Hinglish</option><option value="Tamil">Tamil / Tanglish</option></select></div>
+      <div class="form-group"><label>Language</label><select id="langSelect"><option value="Auto">Auto-detect</option><option value="Hindi">Hindi / Hinglish</option><option value="Tamil">Tamil / Tanglish</option></select></div>
       <button class="btn-primary" id="uploadBtn" onclick="uploadFile()" disabled>Upload &amp; Process</button>
     </div>
   </div>
   <div class="job-tracker" id="jobTracker"></div>
 </div>
 
-<!-- ── SOP Page ── -->
 <div class="page" id="page-sop">
   <div class="top-header"><div><h2>SOP Reports</h2><p>Detailed Standard Operating Procedure compliance breakdown</p></div></div>
   <div id="sopReportsContent"><div class="card"><div class="empty-state"><h3>Select a call to view SOP report</h3><p>Navigate to Dashboard and click on a call record</p></div></div></div>
 </div>
 
-<!-- ── Rejections Page ── -->
 <div class="page" id="page-rejections">
   <div class="top-header"><div><h2>Rejection Analysis</h2><p>Understand why customers reject payments</p></div></div>
   <div class="grid-2" id="rejectionCards"></div>
@@ -268,7 +254,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
-</div><!-- /main -->
+</div>
 
 <script>
 const API=window.location.origin;
@@ -280,7 +266,6 @@ let _lastCallsHash='',_lastMetricsHash='';
 function hashData(d){return JSON.stringify(d);}
 
 const SOP_LABELS={greeting_identity_verification:'Greeting & Identity Verification',loan_product_explanation:'Loan/Product Explanation',payment_options_offered:'Payment Options Offered',objection_handling:'Objection Handling',closing_next_steps:'Closing & Next Steps'};
-// Also support new SOP keys from the refactored API
 const SOP_LABELS_NEW={greeting:'Greeting',identification:'Identification',problemStatement:'Problem Statement',solutionOffering:'Solution Offering',closing:'Closing'};
 
 // ── Navigation ──
@@ -288,55 +273,54 @@ function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  document.querySelector(`.nav-item[data-page="${id}"]`).classList.add('active');
+  document.querySelector('.nav-item[data-page="'+id+'"]').classList.add('active');
 }
 
 // ── Filters ──
 function toggleFilter(type,val){
   if(activeFilters[type]===val){activeFilters[type]=null;}else{activeFilters[type]=val;}
-  document.querySelectorAll('.filter-chip').forEach(c=>{
+  document.querySelectorAll('.filter-chip').forEach(function(c){
     c.classList.remove('active');
-    const txt=c.textContent.trim();
-    if((type==='payment'&&txt.includes(val)&&activeFilters.payment===val)||(type==='language'&&txt.includes(val)&&activeFilters.language===val))c.classList.add('active');
+    var txt=c.textContent.trim();
+    if((type==='payment'&&txt.indexOf(val)>=0&&activeFilters.payment===val)||(type==='language'&&txt.indexOf(val)>=0&&activeFilters.language===val))c.classList.add('active');
   });
   fetchCalls(true);
 }
 function setTableFilter(el,val){
-  document.querySelectorAll('.table-controls .pill').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.table-controls .pill').forEach(function(p){p.classList.remove('active');});
   el.classList.add('active');tablePaymentFilter=val;renderTable();
 }
 function filterTable(){renderTable();}
 
 // ── Poll indicator ──
 function showPollIndicator(){
-  const el=document.getElementById('pollIndicator');
+  var el=document.getElementById('pollIndicator');
   el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),1200);
+  setTimeout(function(){el.classList.remove('show');},1200);
 }
 
-// ── Data Fetching (with hash diffing to prevent unnecessary re-renders) ──
+// ── Data Fetching (with hash diffing) ──
 async function fetchMetrics(force){
   try{
-    const r=await fetch(API+'/dashboard/metrics');
-    const data=await r.json();
-    const hash=hashData(data);
-    if(!force&&hash===_lastMetricsHash){return;}
+    var r=await fetch(API+'/dashboard/metrics');
+    var data=await r.json();
+    var hash=hashData(data);
+    if(!force&&hash===_lastMetricsHash) return;
     _lastMetricsHash=hash;
     metrics=data;
     renderMetrics();
     DEMO_MODE=false;
-  }
-  catch(e){if(!DEMO_MODE){DEMO_MODE=true;metrics=demoMetrics();_lastMetricsHash='';renderMetrics();}}
+  }catch(e){if(!DEMO_MODE){DEMO_MODE=true;metrics=demoMetrics();_lastMetricsHash='';renderMetrics();}}
 }
 async function fetchCalls(force){
   try{
-    let url=API+'/calls?';
-    if(activeFilters.payment)url+=`payment_type=${encodeURIComponent(activeFilters.payment)}&`;
-    if(activeFilters.language)url+=`language=${encodeURIComponent(activeFilters.language)}&`;
-    const r=await fetch(url);
-    const data=await r.json();
-    const hash=hashData(data);
-    if(!force&&hash===_lastCallsHash){return;}
+    var url=API+'/calls?';
+    if(activeFilters.payment)url+='payment_type='+encodeURIComponent(activeFilters.payment)+'&';
+    if(activeFilters.language)url+='language='+encodeURIComponent(activeFilters.language)+'&';
+    var r=await fetch(url);
+    var data=await r.json();
+    var hash=hashData(data);
+    if(!force&&hash===_lastCallsHash) return;
     _lastCallsHash=hash;
     allCalls=data;
     renderTable();renderQuickStats();renderRejections();
@@ -344,7 +328,7 @@ async function fetchCalls(force){
   }catch(e){if(!DEMO_MODE){DEMO_MODE=true;allCalls=demoCalls();_lastCallsHash='';renderTable();renderQuickStats();renderRejections();}}
 }
 async function checkHealth(){
-  try{const r=await fetch(API+'/health');const d=await r.json();
+  try{var r=await fetch(API+'/health');var d=await r.json();
     document.getElementById('apiDot').style.background='#059669';
     document.getElementById('apiLabel').textContent='Connected — '+window.location.host;
   }catch(e){
@@ -357,9 +341,9 @@ async function checkHealth(){
 function renderMetrics(){
   if(!metrics)return;
   document.getElementById('mTotal').textContent=metrics.total_calls;
-  document.getElementById('mTotalSub').textContent=`+${metrics.calls_today} today`;
+  document.getElementById('mTotalSub').textContent='+'+metrics.calls_today+' today';
   document.getElementById('mToday').textContent=metrics.calls_today;
-  const sop=metrics.avg_sop_score;
+  var sop=metrics.avg_sop_score;
   if(sop!==null&&sop!==undefined){
     document.getElementById('mSop').textContent=sop.toFixed(2);
     document.getElementById('mSopBar').style.width=(sop*100)+'%';
@@ -375,157 +359,206 @@ function renderMetrics(){
 
 function sopColor(v){return v>=0.7?'var(--green)':v>=0.4?'var(--amber)':'var(--red)';}
 function renderSOPBars(bd){
-  const c=document.getElementById('sopBarsContainer');
+  var c=document.getElementById('sopBarsContainer');
   if(!bd||!Object.keys(bd).length){c.innerHTML='<div class="empty-state"><p>No data yet</p></div>';return;}
-  // Support both old and new SOP key formats
-  const labels=Object.keys(bd).length<=5&&bd.greeting!==undefined?SOP_LABELS_NEW:SOP_LABELS;
-  const keysToUse=Object.keys(bd).filter(k=>typeof bd[k]==='number');
-  c.innerHTML=keysToUse.map(k=>{
-    const l=labels[k]||SOP_LABELS[k]||SOP_LABELS_NEW[k]||k;
-    const v=bd[k]||0;return`<div class="sop-item"><div class="sop-label"><span>${l}</span><span style="color:${sopColor(v)};font-weight:700">${typeof v==='number'?v.toFixed(2):v}</span></div><div class="sop-bar"><div class="sop-bar-fill" style="width:${(typeof v==='number'?v:0)*100}%;background:${sopColor(v)}"></div></div></div>`;
+  var labels=Object.keys(bd).length<=5&&bd.greeting!==undefined?SOP_LABELS_NEW:SOP_LABELS;
+  var keysToUse=Object.keys(bd).filter(function(k){return typeof bd[k]==='number';});
+  c.innerHTML=keysToUse.map(function(k){
+    var l=labels[k]||SOP_LABELS[k]||SOP_LABELS_NEW[k]||k;
+    var v=bd[k]||0;
+    return '<div class="sop-item"><div class="sop-label"><span>'+l+'</span><span style="color:'+sopColor(v)+';font-weight:700">'+(typeof v==='number'?v.toFixed(2):v)+'</span></div><div class="sop-bar"><div class="sop-bar-fill" style="width:'+(typeof v==='number'?v:0)*100+'%;background:'+sopColor(v)+'"></div></div></div>';
   }).join('');
 }
 
+/* ── Charts — UPDATE in place to prevent flicker ── */
 function renderPaymentChart(dist){
-  const ctx=document.getElementById('paymentChart');if(!ctx)return;
-  if(charts.payment)charts.payment.destroy();
-  const labels=Object.keys(dist||{});const data=Object.values(dist||{});
+  var ctx=document.getElementById('paymentChart');if(!ctx)return;
+  var labels=Object.keys(dist||{});var data=Object.values(dist||{});
   if(!labels.length)return;
-  charts.payment=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:['#3B82F6','#059669','#D97706','#EC4899'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{padding:12,usePointStyle:true,pointStyle:'circle',font:{size:11}}}}}});
+  if(charts.payment){
+    charts.payment.data.labels=labels;
+    charts.payment.data.datasets[0].data=data;
+    charts.payment.update('none');
+    return;
+  }
+  charts.payment=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:['#3B82F6','#059669','#D97706','#EC4899'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,animation:{duration:0},plugins:{legend:{position:'bottom',labels:{padding:12,usePointStyle:true,pointStyle:'circle',font:{size:11}}}}}});
 }
 function renderLangChart(dist){
-  const ctx=document.getElementById('langChart');if(!ctx)return;
-  if(charts.lang)charts.lang.destroy();
-  const labels=Object.keys(dist||{});const data=Object.values(dist||{});
+  var ctx=document.getElementById('langChart');if(!ctx)return;
+  var labels=Object.keys(dist||{});var data=Object.values(dist||{});
   if(!labels.length)return;
-  charts.lang=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:['#7C3AED','#0891B2'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{padding:12,usePointStyle:true,pointStyle:'circle',font:{size:11}}}}}});
+  if(charts.lang){
+    charts.lang.data.labels=labels;
+    charts.lang.data.datasets[0].data=data;
+    charts.lang.update('none');
+    return;
+  }
+  charts.lang=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:['#7C3AED','#0891B2'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,animation:{duration:0},plugins:{legend:{position:'bottom',labels:{padding:12,usePointStyle:true,pointStyle:'circle',font:{size:11}}}}}});
 }
 function renderRejChart(dist){
-  const ctx=document.getElementById('rejChart');if(!ctx)return;
-  if(charts.rej)charts.rej.destroy();
-  const labels=Object.keys(dist||{});const data=Object.values(dist||{});
+  var labels=Object.keys(dist||{});var data=Object.values(dist||{});
   if(!labels.length){document.getElementById('rejChartContainer').innerHTML='<div class="empty-state"><p>No rejections</p></div>';return;}
-  charts.rej=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:'#EF4444',borderRadius:4,barThickness:18}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{font:{size:11}}},y:{ticks:{font:{size:11}}}}}});
+  var container=document.getElementById('rejChartContainer');
+  var ctx=container.querySelector('canvas');
+  if(!ctx){container.innerHTML='<canvas id="rejChart"></canvas>';ctx=container.querySelector('canvas');}
+  if(charts.rej){
+    charts.rej.data.labels=labels;
+    charts.rej.data.datasets[0].data=data;
+    charts.rej.update('none');
+    return;
+  }
+  charts.rej=new Chart(ctx,{type:'bar',data:{labels:labels,datasets:[{data:data,backgroundColor:'#EF4444',borderRadius:4,barThickness:18}]},options:{indexAxis:'y',responsive:true,animation:{duration:0},plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{font:{size:11}}},y:{ticks:{font:{size:11}}}}}});
 }
 
-// ── Table ──
-function paymentBadge(t){const m={'EMI':'badge-blue','Full Payment':'badge-green','FULL_PAYMENT':'badge-green','Partial Payment':'badge-amber','PARTIAL_PAYMENT':'badge-amber','Down Payment':'badge-pink','DOWN_PAYMENT':'badge-pink'};return t&&t!=='NONE'?`<span class="badge ${m[t]||'badge-gray'}">${t}</span>`:'<span class="badge badge-gray">—</span>';}
-function langBadge(l){return l==='Hindi'?'<span class="badge badge-purple">Hindi</span>':l==='Tamil'?'<span class="badge badge-cyan">Tamil</span>':'<span class="badge badge-gray">—</span>';}
-function statusBadge(s){const m={completed:'badge-green',processing:'badge-blue',pending:'badge-amber',failed:'badge-red'};return`<span class="badge ${m[s]||'badge-gray'}">${s}</span>`;}
-function sopBadge(v){if(v===null||v===undefined)return'—';const col=v>=0.7?'var(--green)':v>=0.4?'var(--amber)':'var(--red)';const cls=v>=0.7?'badge-green':v>=0.4?'badge-amber':'badge-red';return`<div class="mini-bar"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${v*100}%;background:${col}"></div></div><span class="badge ${cls}">${v.toFixed(2)}</span></div>`;}
-function fmtTime(iso){if(!iso)return'—';const d=new Date(iso);return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});}
+/* ── Table — skip DOM write if content unchanged ── */
+var _lastTableHtml='';
+function paymentBadge(t){var m={'EMI':'badge-blue','Full Payment':'badge-green','FULL_PAYMENT':'badge-green','Partial Payment':'badge-amber','PARTIAL_PAYMENT':'badge-amber','Down Payment':'badge-pink','DOWN_PAYMENT':'badge-pink'};return t&&t!=='NONE'?'<span class="badge '+(m[t]||'badge-gray')+'">'+t+'</span>':'<span class="badge badge-gray">\u2014</span>';}
+function langBadge(l){return l==='Hindi'?'<span class="badge badge-purple">Hindi</span>':l==='Tamil'?'<span class="badge badge-cyan">Tamil</span>':'<span class="badge badge-gray">\u2014</span>';}
+function statusBadge(s){var m={completed:'badge-green',processing:'badge-blue',pending:'badge-amber',failed:'badge-red'};return'<span class="badge '+(m[s]||'badge-gray')+'">'+s+'</span>';}
+function sopBadge(v){if(v===null||v===undefined)return'\u2014';var col=v>=0.7?'var(--green)':v>=0.4?'var(--amber)':'var(--red)';var cls=v>=0.7?'badge-green':v>=0.4?'badge-amber':'badge-red';return'<div class="mini-bar"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:'+v*100+'%;background:'+col+'"></div></div><span class="badge '+cls+'">'+v.toFixed(2)+'</span></div>';}
+function fmtTime(iso){if(!iso)return'\u2014';if(!iso.includes('T') && iso.includes(' '))iso=iso.replace(' ','T');if(!iso.endsWith('Z')&&!iso.includes('+'))iso+='Z';var d=new Date(iso);if(isNaN(d.getTime()))return'\u2014';return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});}
 
 function renderTable(){
-  const body=document.getElementById('callsBody');
-  const search=document.getElementById('tableSearch').value.toLowerCase();
-  let filtered=allCalls;
-  if(tablePaymentFilter)filtered=filtered.filter(c=>c.payment_type===tablePaymentFilter);
-  if(search)filtered=filtered.filter(c=>(c.filename||'').toLowerCase().includes(search)||(c.id||'').toLowerCase().includes(search)||(c.language||'').toLowerCase().includes(search));
-  if(!filtered.length){body.innerHTML='<tr><td colspan="8"><div class="empty-state"><h3>No calls found</h3><p>Upload audio files to get started</p></div></td></tr>';return;}
-  body.innerHTML=filtered.map(c=>`
-    <tr onclick="toggleRow('${c.id}')">
-      <td style="font-family:monospace;font-size:11px;color:var(--text-secondary)">${(c.id||'').substring(0,8)}…</td>
-      <td style="font-weight:500">${c.filename||'—'}</td>
-      <td>${langBadge(c.language)}</td>
-      <td>${paymentBadge(c.payment_type)}</td>
-      <td>${sopBadge(c.sop_score)}</td>
-      <td>${c.rejection_reason&&c.rejection_reason!=='NONE'?`<span class="badge badge-red">${c.rejection_reason}</span>`:'<span style="color:#CBD5E1">—</span>'}</td>
-      <td>${statusBadge(c.status)}</td>
-      <td style="font-size:11px;color:var(--text-secondary)">${fmtTime(c.created_at)}</td>
-    </tr>
-    <tr class="expanded-row" id="row-${c.id}"><td colspan="8"><div class="expanded-content" id="detail-${c.id}"><p>Loading...</p></div></td></tr>
-  `).join('');
+  var body=document.getElementById('callsBody');
+  var search=document.getElementById('tableSearch').value.toLowerCase();
+  var filtered=allCalls;
+  if(tablePaymentFilter)filtered=filtered.filter(function(c){return c.payment_type===tablePaymentFilter;});
+  if(search)filtered=filtered.filter(function(c){return(c.filename||'').toLowerCase().indexOf(search)>=0||(c.id||'').toLowerCase().indexOf(search)>=0||(c.language||'').toLowerCase().indexOf(search)>=0;});
+  var html;
+  if(!filtered.length){html='<tr><td colspan="8"><div class="empty-state"><h3>No calls found</h3><p>Upload audio files to get started</p></div></td></tr>';}
+  else{html=filtered.map(function(c){return '<tr onclick="toggleRow(\''+c.id+'\')"><td style="font-family:monospace;font-size:11px;color:var(--text-secondary)">'+(c.id||'').substring(0,8)+'\u2026</td><td style="font-weight:500">'+(c.filename||'\u2014')+'</td><td>'+langBadge(c.language)+'</td><td>'+paymentBadge(c.payment_type)+'</td><td>'+sopBadge(c.sop_score)+'</td><td>'+(c.rejection_reason&&c.rejection_reason!=='NONE'?'<span class="badge badge-red">'+c.rejection_reason+'</span>':'<span style="color:#CBD5E1">\u2014</span>')+'</td><td>'+statusBadge(c.status)+'</td><td style="font-size:11px;color:var(--text-secondary)">'+fmtTime(c.created_at)+'</td></tr><tr class="expanded-row" id="row-'+c.id+'"><td colspan="8"><div class="expanded-content" id="detail-'+c.id+'"><p>Loading...</p></div></td></tr>';}).join('');}
+  if(html!==_lastTableHtml){_lastTableHtml=html;body.innerHTML=html;}
 }
 
 async function toggleRow(id){
-  const row=document.getElementById('row-'+id);
+  var row=document.getElementById('row-'+id);
   if(row.classList.contains('show')){row.classList.remove('show');return;}
-  document.querySelectorAll('.expanded-row.show').forEach(r=>r.classList.remove('show'));
+  document.querySelectorAll('.expanded-row.show').forEach(function(r){r.classList.remove('show');});
   row.classList.add('show');
   try{
-    const r=await fetch(API+'/calls/'+id);const d=await r.json();
-    const det=document.getElementById('detail-'+id);
-    let sopHtml='';
+    var r=await fetch(API+'/calls/'+id);var d=await r.json();
+    var det=document.getElementById('detail-'+id);
+    var sopHtml='';
     if(d.sop_breakdown){
-      const labels=d.sop_breakdown.greeting!==undefined?SOP_LABELS_NEW:SOP_LABELS;
-      const numericKeys=Object.keys(d.sop_breakdown).filter(k=>typeof d.sop_breakdown[k]==='number');
-      sopHtml='<div class="expanded-sop">'+numericKeys.map(k=>{const l=labels[k]||SOP_LABELS[k]||SOP_LABELS_NEW[k]||k;const v=d.sop_breakdown[k]||0;return`<div class="sop-item"><div class="sop-label"><span>${l}</span><span style="color:${sopColor(v)};font-weight:700">${typeof v==='number'?v.toFixed(2):v}</span></div><div class="sop-bar"><div class="sop-bar-fill" style="width:${(typeof v==='number'?v:0)*100}%;background:${sopColor(v)}"></div></div></div>`;}).join('')+'</div>';
+      var labels=d.sop_breakdown.greeting!==undefined?SOP_LABELS_NEW:SOP_LABELS;
+      var numericKeys=Object.keys(d.sop_breakdown).filter(function(k){return typeof d.sop_breakdown[k]==='number';});
+      sopHtml='<div class="expanded-sop">'+numericKeys.map(function(k){var l=labels[k]||SOP_LABELS[k]||SOP_LABELS_NEW[k]||k;var v=d.sop_breakdown[k]||0;return'<div class="sop-item"><div class="sop-label"><span>'+l+'</span><span style="color:'+sopColor(v)+';font-weight:700">'+(typeof v==='number'?v.toFixed(2):v)+'</span></div><div class="sop-bar"><div class="sop-bar-fill" style="width:'+(typeof v==='number'?v:0)*100+'%;background:'+sopColor(v)+'"></div></div></div>';}).join('')+'</div>';
     }
-    det.innerHTML=`<h4>Summary</h4><p>${d.summary||'No summary available'}</p><h4>SOP Breakdown</h4>${sopHtml||'<p>Not available</p>'}<h4 style="margin-top:12px">Transcript</h4><p style="max-height:200px;overflow-y:auto;background:#fff;padding:12px;border-radius:8px;font-size:11px;line-height:1.7">${d.transcript||'Not available'}</p>`;
+    det.innerHTML='<h4>Summary</h4><p>'+(d.summary||'No summary available')+'</p><h4>SOP Breakdown</h4>'+(sopHtml||'<p>Not available</p>')+'<h4 style="margin-top:12px">Transcript</h4><p style="max-height:200px;overflow-y:auto;background:#fff;padding:12px;border-radius:8px;font-size:11px;line-height:1.7">'+(d.transcript||'Not available')+'</p>';
   }catch(e){document.getElementById('detail-'+id).innerHTML='<p>Failed to load details</p>';}
 }
 
-// ── Quick Stats ──
 function renderQuickStats(){
-  const comp=allCalls.filter(c=>c.status==='completed');
+  var comp=allCalls.filter(function(c){return c.status==='completed';});
   document.getElementById('qCompleted').textContent=comp.length;
-  document.getElementById('qProcessing').textContent=allCalls.filter(c=>c.status==='processing').length;
-  document.getElementById('qFailed').textContent=allCalls.filter(c=>c.status==='failed').length;
-  document.getElementById('qGood').textContent=comp.filter(c=>c.sop_score>=0.7).length;
-  document.getElementById('qPoor').textContent=comp.filter(c=>c.sop_score!==null&&c.sop_score<0.4).length;
+  document.getElementById('qProcessing').textContent=allCalls.filter(function(c){return c.status==='processing';}).length;
+  document.getElementById('qFailed').textContent=allCalls.filter(function(c){return c.status==='failed';}).length;
+  document.getElementById('qGood').textContent=comp.filter(function(c){return c.sop_score>=0.7;}).length;
+  document.getElementById('qPoor').textContent=comp.filter(function(c){return c.sop_score!==null&&c.sop_score<0.4;}).length;
 }
 
-// ── Rejections Page ──
 function renderRejections(){
-  const rejected=allCalls.filter(c=>c.rejection_reason&&c.rejection_reason!=='NONE');
-  const counts={};rejected.forEach(c=>{counts[c.rejection_reason]=(counts[c.rejection_reason]||0)+1;});
-  const cards=document.getElementById('rejectionCards');
-  const colors={'Price Too High':'#EF4444','HIGH_INTEREST':'#EF4444','Already Paid':'#3B82F6','ALREADY_PAID':'#3B82F6','Wrong Timing':'#F59E0B','BUDGET_CONSTRAINTS':'#F59E0B','Disputes Loan':'#8B5CF6','NOT_INTERESTED':'#8B5CF6','No Money':'#EC4899','Will Pay Later':'#06B6D4','Other':'#6B7280'};
-  cards.innerHTML=Object.entries(counts).map(([r,n])=>`<div class="card" style="border-left:4px solid ${colors[r]||'#6B7280'}"><div class="card-title">${r}</div><div style="font-size:28px;font-weight:800">${n}</div><div style="font-size:12px;color:var(--text-secondary)">${(n/rejected.length*100).toFixed(0)}% of rejections</div></div>`).join('');
-  const tbody=document.getElementById('rejTableBody');
-  tbody.innerHTML=rejected.map(c=>`<tr><td>${c.filename}</td><td>${langBadge(c.language)}</td><td><span class="badge badge-red">${c.rejection_reason}</span></td><td>${sopBadge(c.sop_score)}</td><td style="font-size:11px">${fmtTime(c.created_at)}</td></tr>`).join('')||'<tr><td colspan="5"><div class="empty-state"><p>No rejected calls</p></div></td></tr>';
+  var rejected=allCalls.filter(function(c){return c.rejection_reason&&c.rejection_reason!=='NONE';});
+  var counts={};rejected.forEach(function(c){counts[c.rejection_reason]=(counts[c.rejection_reason]||0)+1;});
+  var cards=document.getElementById('rejectionCards');
+  var colors={'Price Too High':'#EF4444','HIGH_INTEREST':'#EF4444','Already Paid':'#3B82F6','ALREADY_PAID':'#3B82F6','Wrong Timing':'#F59E0B','BUDGET_CONSTRAINTS':'#F59E0B','Disputes Loan':'#8B5CF6','NOT_INTERESTED':'#8B5CF6','No Money':'#EC4899','Will Pay Later':'#06B6D4','Other':'#6B7280'};
+  cards.innerHTML=Object.entries(counts).map(function(e){var r=e[0],n=e[1];return'<div class="card" style="border-left:4px solid '+(colors[r]||'#6B7280')+'"><div class="card-title">'+r+'</div><div style="font-size:28px;font-weight:800">'+n+'</div><div style="font-size:12px;color:var(--text-secondary)">'+(n/rejected.length*100).toFixed(0)+'% of rejections</div></div>';}).join('');
+  var tbody=document.getElementById('rejTableBody');
+  tbody.innerHTML=rejected.map(function(c){return'<tr><td>'+c.filename+'</td><td>'+langBadge(c.language)+'</td><td><span class="badge badge-red">'+c.rejection_reason+'</span></td><td>'+sopBadge(c.sop_score)+'</td><td style="font-size:11px">'+fmtTime(c.created_at)+'</td></tr>';}).join('')||'<tr><td colspan="5"><div class="empty-state"><p>No rejected calls</p></div></td></tr>';
 }
 
-// ── Upload ──
-let selectedFileObj=null;
-function onFileSelect(inp){if(inp.files.length){selectedFileObj=inp.files[0];document.getElementById('selectedFile').textContent='📎 '+selectedFileObj.name;document.getElementById('uploadBtn').disabled=false;}}
-function handleDrop(e){e.preventDefault();document.getElementById('uploadZone').classList.remove('dragover');if(e.dataTransfer.files.length){selectedFileObj=e.dataTransfer.files[0];document.getElementById('selectedFile').textContent='📎 '+selectedFileObj.name;document.getElementById('uploadBtn').disabled=false;}}
+/* ── Upload ── */
+var selectedFileObj=null;
+function onFileSelect(inp){if(inp.files.length){selectedFileObj=inp.files[0];document.getElementById('selectedFile').textContent='\ud83d\udcce '+selectedFileObj.name;document.getElementById('uploadBtn').disabled=false;}}
+function handleDrop(e){e.preventDefault();document.getElementById('uploadZone').classList.remove('dragover');if(e.dataTransfer.files.length){selectedFileObj=e.dataTransfer.files[0];document.getElementById('selectedFile').textContent='\ud83d\udcce '+selectedFileObj.name;document.getElementById('uploadBtn').disabled=false;}}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = error => reject(error);
+  });
+}
+
 async function uploadFile(){
   if(!selectedFileObj)return;
-  const btn=document.getElementById('uploadBtn');btn.disabled=true;btn.textContent='Uploading...';
-  const fd=new FormData();fd.append('file',selectedFileObj);
-  const lang=document.getElementById('langSelect').value;if(lang)fd.append('language',lang);
+  var btn=document.getElementById('uploadBtn');btn.disabled=true;btn.textContent='Processing...';
+  
+  var lang=document.getElementById('langSelect').value || 'Auto';
+  var jobId = 'ui-' + Date.now();
+  var ext = selectedFileObj.name.split('.').pop().toLowerCase();
+  
   try{
-    const r=await fetch(API+'/upload',{method:'POST',body:fd});const d=await r.json();
+    var base64Audio = await fileToBase64(selectedFileObj);
+    
+    var tracker=document.getElementById('jobTracker');
+    var card=document.createElement('div');card.className='job-card';card.id='job-'+jobId;
+    card.innerHTML='<div class="job-header"><span style="font-weight:600">Processing Audio</span><span class="job-id">'+jobId+'</span></div><div class="progress-steps"><div class="step done"><div class="step-dot">\u2713</div>Uploaded</div><div class="step-line"></div><div class="step active"><div class="step-dot">2</div>Processing Audio</div><div class="step-line"></div><div class="step waiting"><div class="step-dot">3</div>Complete</div></div><div class="result-preview" id="result-'+jobId+'"><div class="processing-wave"><span></span><span></span><span></span><span></span><span></span></div><p style="text-align:center;color:var(--text-secondary);font-size:12px;margin-bottom:12px;">AI is meticulously analyzing your audio...<br><span style="opacity:0.7;font-size:11px">This may take a few minutes for complex/noisy recordings</span></p></div>';
+    tracker.prepend(card);
+
+    var payload = {
+        language: lang,
+        audioFormat: ext === 'wav' ? 'wav' : 'mp3',
+        audioBase64: base64Audio
+    };
+
+    var r=await fetch(API+'/api/call-analytics',{
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': 'sk_track3_987654321'
+        },
+        body:JSON.stringify(payload)
+    });
+    
+    var d=await r.json();
+    
     btn.textContent='Upload & Process';btn.disabled=false;selectedFileObj=null;
     document.getElementById('selectedFile').textContent='';document.getElementById('fileInput').value='';
-    addJobTracker(d.job_id);
-  }catch(e){btn.textContent='Upload & Process';btn.disabled=false;alert('Upload failed: '+e.message);}
-}
-function addJobTracker(jobId){
-  const tracker=document.getElementById('jobTracker');
-  const card=document.createElement('div');card.className='job-card';card.id='job-'+jobId;
-  card.innerHTML=`<div class="job-header"><span style="font-weight:600">Processing Job</span><span class="job-id">${jobId}</span></div>
-    <div class="progress-steps"><div class="step done"><div class="step-dot">✓</div>Uploaded</div><div class="step-line"></div><div class="step active"><div class="step-dot">2</div>Processing</div><div class="step-line"></div><div class="step waiting"><div class="step-dot">3</div>Complete</div></div>
-    <div class="result-preview" id="result-${jobId}"><p>Processing your audio file...</p></div>`;
-  tracker.prepend(card);
-  pollJob(jobId);
-}
-async function pollJob(jobId){
-  const iv=setInterval(async()=>{
-    try{
-      const r=await fetch(API+'/job/'+jobId+'/status');const d=await r.json();
-      const card=document.getElementById('job-'+jobId);if(!card)return clearInterval(iv);
-      if(d.status==='completed'){
-        clearInterval(iv);
-        card.querySelector('.progress-steps').innerHTML=`<div class="step done"><div class="step-dot">✓</div>Uploaded</div><div class="step-line done"></div><div class="step done"><div class="step-dot">✓</div>Processed</div><div class="step-line done"></div><div class="step done"><div class="step-dot">✓</div>Complete</div>`;
-        let sopHtml='';if(d.sop_breakdown){const labels=d.sop_breakdown.greeting!==undefined?SOP_LABELS_NEW:SOP_LABELS;const numericKeys=Object.keys(d.sop_breakdown).filter(k=>typeof d.sop_breakdown[k]==='number');sopHtml=numericKeys.map(k=>{const l=labels[k]||SOP_LABELS[k]||SOP_LABELS_NEW[k]||k;const v=d.sop_breakdown[k]||0;return`<div class="sop-item"><div class="sop-label"><span>${l}</span><span style="color:${sopColor(v)};font-weight:700">${typeof v==='number'?v.toFixed(2):v}</span></div><div class="sop-bar"><div class="sop-bar-fill" style="width:${(typeof v==='number'?v:0)*100}%;background:${sopColor(v)}"></div></div></div>`;}).join('');}
-        document.getElementById('result-'+jobId).innerHTML=`<h4>Summary</h4><p>${d.summary||'—'}</p><h4 style="margin-top:12px">SOP Score: ${sopBadge(d.sop_score)}</h4>${sopHtml}<div style="margin-top:12px;display:flex;gap:8px">${paymentBadge(d.payment_type)} ${d.rejection_reason&&d.rejection_reason!=='NONE'?`<span class="badge badge-red">${d.rejection_reason}</span>`:''}</div>`;
-        fetchCalls(true);fetchMetrics(true);
-      }else if(d.status==='failed'){
-        clearInterval(iv);
-        card.querySelector('.progress-steps').innerHTML=`<div class="step done"><div class="step-dot">✓</div>Uploaded</div><div class="step-line"></div><div class="step" style="color:var(--red)"><div class="step-dot">✗</div>Failed</div>`;
-        document.getElementById('result-'+jobId).innerHTML=`<p style="color:var(--red)">Processing failed: ${d.error_message||'Unknown error'}</p>`;
-      }
-    }catch(e){}
-  },3000);
+    
+    var card=document.getElementById('job-'+jobId);
+    if(r.ok && d.status==='success'){
+        card.querySelector('.progress-steps').innerHTML='<div class="step done"><div class="step-dot">\u2713</div>Uploaded</div><div class="step-line done"></div><div class="step done"><div class="step-dot">\u2713</div>Processed</div><div class="step-line done"></div><div class="step done"><div class="step-dot">\u2713</div>Complete</div>';
+        
+        var sopHtml='';
+        if(d.sop_validation){
+            var keys = ['greeting', 'identification', 'problemStatement', 'solutionOffering', 'closing'];
+            var labels = SOP_LABELS_NEW;
+            sopHtml = keys.map(function(k){
+                var l=labels[k]||k;
+                var v=d.sop_validation[k] ? 1.0 : 0.0;
+                return '<div class="sop-item"><div class="sop-label"><span>'+l+'</span><span style="color:'+sopColor(v)+';font-weight:700">'+(v>0?'Yes':'No')+'</span></div><div class="sop-bar"><div class="sop-bar-fill" style="width:'+(v*100)+'%;background:'+sopColor(v)+'"></div></div></div>';
+            }).join('');
+        }
+        
+        var paymentPref = d.analytics ? d.analytics.paymentPreference : 'UNKNOWN';
+        var rejReason = d.analytics ? d.analytics.rejectionReason : 'NONE';
+        
+        document.getElementById('result-'+jobId).innerHTML='<h4>Summary</h4><p>'+(d.summary||'\u2014')+'</p><h4 style="margin-top:12px">SOP Score: '+sopBadge(d.sop_validation.complianceScore)+'</h4>'+sopHtml+'<div style="margin-top:12px;display:flex;gap:8px">'+paymentBadge(paymentPref)+' '+(rejReason&&rejReason!=='NONE'?'<span class="badge badge-red">'+rejReason+'</span>':'')+'</div>';
+    } else {
+        card.querySelector('.progress-steps').innerHTML='<div class="step done"><div class="step-dot">\u2713</div>Uploaded</div><div class="step-line"></div><div class="step" style="color:var(--red)"><div class="step-dot">\u2717</div>Failed</div>';
+        document.getElementById('result-'+jobId).innerHTML='<p style="color:var(--red)">Processing failed: '+(d.message||'Unknown error')+'</p>';
+    }
+
+  }catch(e){
+    btn.textContent='Upload & Process';btn.disabled=false;selectedFileObj=null;
+    document.getElementById('selectedFile').textContent='';document.getElementById('fileInput').value='';
+    var card=document.getElementById('job-'+jobId);
+    if(card) {
+        card.querySelector('.progress-steps').innerHTML='<div class="step done"><div class="step-dot">\u2713</div>Uploaded</div><div class="step-line"></div><div class="step" style="color:var(--red)"><div class="step-dot">\u2717</div>Failed</div>';
+        document.getElementById('result-'+jobId).innerHTML='<p style="color:var(--red)">Processing failed: '+e.message+'</p>';
+    } else {
+        alert('Upload failed: '+e.message);
+    }
+  }
 }
 
-// ── Clock ──
-function updateClock(){const now=new Date();document.getElementById('liveClock').textContent=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' • '+now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
+/* ── Clock ── */
+function updateClock(){var now=new Date();document.getElementById('liveClock').textContent=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' \u2022 '+now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
 setInterval(updateClock,1000);updateClock();
 
-// ── Demo Data ──
+/* ── Demo Data ── */
 function demoMetrics(){return{total_calls:47,calls_today:12,avg_sop_score:0.72,rejection_rate:23.4,payment_distribution:{EMI:18,'Full Payment':12,'Partial Payment':9,'Down Payment':8},language_distribution:{Hindi:28,Tamil:19},rejection_reasons:{'Price Too High':4,'No Money':3,'Will Pay Later':2,'Wrong Timing':1,'Disputes Loan':1},avg_sop_breakdown:{greeting_identity_verification:0.78,loan_product_explanation:0.71,payment_options_offered:0.68,objection_handling:0.65,closing_next_steps:0.80}};}
 function demoCalls(){return[
 {id:'a1b2c3d4-e5f6-7890-abcd-ef1234567890',filename:'call_hindi_01.mp3',language:'Hindi',payment_type:'EMI',sop_score:0.83,rejection_reason:null,status:'completed',created_at:new Date().toISOString(),sop_breakdown:{greeting_identity_verification:0.90,loan_product_explanation:0.80,payment_options_offered:0.75,objection_handling:0.85,closing_next_steps:0.82}},
@@ -536,17 +569,27 @@ function demoCalls(){return[
 {id:'f6a7b8c9-d0e1-2345-fabc-678901234567',filename:'call_tamil_06.wav',language:'Tamil',payment_type:null,sop_score:0.42,rejection_reason:'No Money',status:'completed',created_at:new Date(Date.now()-14400000).toISOString(),sop_breakdown:{greeting_identity_verification:0.50,loan_product_explanation:0.35,payment_options_offered:0.40,objection_handling:0.45,closing_next_steps:0.40}},
 ];}
 
-// ── Init ──
+/* ── Init ── */
 checkHealth();fetchMetrics(true);fetchCalls(true);
 
-// Poll every 30 seconds (not 10) and only re-render when data changes
-setInterval(()=>{
+/* ── Background Polling — skip when tab is hidden, 60s interval ── */
+setInterval(function(){
+  if(document.hidden) return;
   showPollIndicator();
   fetchCalls(false);
   fetchMetrics(false);
-},30000);
+},60000);
 
-// Health check every 60 seconds
+/* Refresh data when tab becomes visible again */
+document.addEventListener('visibilitychange',function(){
+  if(!document.hidden){
+    fetchCalls(false);
+    fetchMetrics(false);
+    checkHealth();
+  }
+});
+
+/* Health check every 60 seconds */
 setInterval(checkHealth,60000);
 </script>
 </body>

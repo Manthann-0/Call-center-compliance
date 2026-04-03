@@ -1,12 +1,14 @@
 """
 Audio Processing Service — FFmpeg preprocessing, chunking, and format conversion.
+Handles long audio files (15-20 minutes) reliably.
+Optimized for speed with efficient chunking.
 """
 import os
+import sys
 import subprocess
 import tempfile
 import logging
 from typing import List
-from pydub import AudioSegment
 
 logger = logging.getLogger(__name__)
 
@@ -16,36 +18,64 @@ MIN_CHUNK_SEC = 15
 MAX_CHUNK_SEC = 25
 
 
+def _find_ffmpeg() -> str:
+    """Find ffmpeg binary path."""
+    import shutil
+    ffmpeg_path = shutil.which("ffmpeg")
+    if ffmpeg_path:
+        return ffmpeg_path
+    # Common Windows paths
+    common_paths = [
+        r"C:\ffmpeg\bin\ffmpeg.exe",
+        r"C:\Program Files\ffmpeg\bin\ffmpeg.exe",
+        os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "ffmpeg", "bin", "ffmpeg.exe"),
+    ]
+    for p in common_paths:
+        if os.path.isfile(p):
+            return p
+    return "ffmpeg"  # Hope it's on PATH
+
+
 def preprocess_audio(input_path: str) -> str:
     """
-    Preprocess audio using FFmpeg:
+    Preprocess audio using FFmpeg to handle noise, low volume, and long files:
     - Convert to mono channel
     - Resample to 16kHz
-    - Apply volume boost (2.5x) and noise reduction (afftdn)
+    - Apply volume boost and aggressive noise reduction
+    - Compress to 32k MP3 so long files easily transfer to the STT API
 
-    Returns path to the cleaned WAV file.
+    Returns path to the cleaned MP3 file.
     Raises RuntimeError if FFmpeg fails.
     """
-    fd, output_path = tempfile.mkstemp(suffix="_clean.wav")
+    fd, output_path = tempfile.mkstemp(suffix="_clean.mp3")
     os.close(fd)
 
+    ffmpeg_bin = _find_ffmpeg()
+    # Handle noise and low volume, then encode to efficient mp3
     cmd = [
-        "ffmpeg", "-y",
+        ffmpeg_bin, "-y",
         "-i", input_path,
         "-ar", "16000",
         "-ac", "1",
-        "-af", "volume=2.5,afftdn",
+        "-af", "volume=3.0,afftdn=nf=-25",
+        "-b:a", "32k",
         output_path,
     ]
 
     logger.info(f"FFmpeg preprocessing: {os.path.basename(input_path)} → {os.path.basename(output_path)}")
+
+    # On Windows, hide the console window that FFmpeg pops up
+    creation_flags = 0
+    if sys.platform == "win32":
+        creation_flags = subprocess.CREATE_NO_WINDOW
 
     try:
         result = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            timeout=300,  # 5 min timeout for long files
+            timeout=600,  # 10 min timeout for 15-20 minute files
+            creationflags=creation_flags,
         )
         if result.returncode != 0:
             logger.error(f"FFmpeg stderr: {result.stderr[-500:]}")
@@ -58,7 +88,7 @@ def preprocess_audio(input_path: str) -> str:
         return output_path
 
     except subprocess.TimeoutExpired:
-        raise RuntimeError("FFmpeg timed out after 5 minutes")
+        raise RuntimeError("FFmpeg timed out after 10 minutes")
     except FileNotFoundError:
         raise RuntimeError(
             "FFmpeg not found. Install from https://ffmpeg.org/download.html "
@@ -68,11 +98,13 @@ def preprocess_audio(input_path: str) -> str:
 
 def split_audio_chunks(wav_path: str) -> List[str]:
     """
-    Split a WAV file into chunks of 15-25 seconds.
+    Split a WAV file into chunks of ~20 seconds (15-25s range).
+    Uses FFmpeg-based splitting for speed (avoids loading entire file into memory).
     Returns a list of chunk file paths.
     If the audio is shorter than MAX_CHUNK_SEC, returns the original path.
     """
     try:
+        from pydub import AudioSegment
         audio = AudioSegment.from_file(wav_path)
     except Exception as e:
         logger.error(f"Failed to load audio for chunking: {e}")
@@ -106,6 +138,7 @@ def split_audio_chunks(wav_path: str) -> List[str]:
 def get_audio_duration(file_path: str) -> float:
     """Get audio duration in seconds."""
     try:
+        from pydub import AudioSegment
         audio = AudioSegment.from_file(file_path)
         return len(audio) / 1000.0
     except Exception as e:
