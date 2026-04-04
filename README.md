@@ -31,7 +31,7 @@ docker run -d -p 6379:6379 redis:alpine
 Create a `.env` file:
 
 ```env
-API_KEY=sk_track3_987654321
+API_KEY=your_api_key_here
 SARVAM_API_KEY=your_sarvam_api_key
 LLM_API_KEY=your_cerebras_api_key
 LLM_BASE_URL=https://api.cerebras.ai/v1
